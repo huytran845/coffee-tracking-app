@@ -1,3 +1,4 @@
+// Components
 import Layout from "./components/Layout";
 import Hero from "./components/Hero";
 import CoffeeForm from "./components/CoffeeForm";
