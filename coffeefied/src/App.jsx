@@ -6,7 +6,7 @@ import History from "./components/History";
 import Stats from "./components/Stats";
 
 function App() {
-  const isAuthenticated = false;
+  const isAuthenticated = true;
 
   const authenticatedContent = (
     <>
@@ -19,6 +19,7 @@ function App() {
     <Layout>
       <Hero />
       <CoffeeForm />
+      {isAuthenticated && authenticatedContent}
     </Layout>
   );
 }
