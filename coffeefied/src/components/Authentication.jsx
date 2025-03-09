@@ -1,13 +1,104 @@
 // Node Modules
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const Authentication = () => {
   const [isRegistration, setIsRegistration] = useState(false);
   const [email, setEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
 
-  async function handleAuthentication() {}
+  const { signup, login, signout } = useAuth();
+
+  const specialChars = [
+    "~",
+    "!",
+    "@",
+    "#",
+    "$",
+    "%",
+    "^",
+    "&",
+    "*",
+    "_",
+    "-",
+    "+",
+    "=",
+    "`",
+    "|",
+    "()",
+    "(",
+    ")",
+    "{}",
+    "{",
+    "}",
+    "[]",
+    "[",
+    "]",
+    ":",
+    ";",
+    "'",
+    "<>",
+    ",",
+    ".",
+    "?",
+    "/",
+  ];
+
+  function hasNumber(checkWord) {
+    return /\d/.test(checkWord); //Checks through word for number and checks for metacharacter d = digit
+  }
+
+  // Function to check if there is an uppercase and lowercase value in the password
+  function hasProperCases(checkWord) {
+    if (checkWord === checkWord.toLowerCase()) {
+      return false;
+    } else if (checkWord === checkWord.toUpperCase()) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  async function handleAuthentication() {
+    if (
+      !email ||
+      !email.includes("@") ||
+      password.length < 8 ||
+      authenticating
+    ) {
+      return;
+    }
+
+    try {
+      setAuthenticating(true);
+
+      if (isRegistration) {
+        // if (
+        //   email != confirmEmail ||
+        //   !hasProperCases(password) ||
+        //   !hasNumber(password) ||
+        //   !specialChars.some((char) => password.includes(char)) ||
+        //   password != confirmPassword
+        // ) {
+        // Fails to meet requirements
+        // } else {
+        // Registering the user
+        await signup(email, password);
+        // }
+      } else {
+        // Login the user
+        await login(email, password);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setAuthenticating(false);
+    }
+  }
 
   return (
     <>
@@ -20,35 +111,45 @@ const Authentication = () => {
         }}
         placeholder="example@gmail.com"
       />
-      {/* {isRegistration && (
+      {isRegistration && (
         <input
-          value={email}
+          value={confirmEmail}
           onChange={(emailEvent) => {
-            setEmail(emailEvent.target.value);
+            setConfirmEmail(emailEvent.target.value);
           }}
           placeholder="confirm@gmail.com"
         />
-      )} */}
+      )}
       <input
         value={password}
         onChange={(passwordEvent) => {
           setPassword(passwordEvent.target.value);
         }}
         placeholder="*******"
-        type="password"
+        type={showPassword ? "text" : "password"}
       />
-      {/* {isRegistration && (
+      {isRegistration && (
         <input
-          value={password}
+          className="password"
+          value={confirmPassword}
           onChange={(passwordEvent) => {
-            setPassword(passwordEvent.target.value);
+            setConfirmPassword(passwordEvent.target.value);
           }}
           placeholder="Confirm Password"
-          type="password"
+          type={showPassword ? "text" : "password"}
         />
-      )} */}
-      <button onClick={handleAuthentication()}>
-        <p>Submit</p>
+      )}
+      <div>
+        <input
+          type="checkbox"
+          onClick={() => {
+            setShowPassword(!showPassword);
+          }}
+        />
+        Show Password
+      </div>
+      <button onClick={() => handleAuthentication()}>
+        <p>{authenticating ? "Authenticating" : "Submit"}</p>
       </button>
       <hr />
       <div className="register-content">
