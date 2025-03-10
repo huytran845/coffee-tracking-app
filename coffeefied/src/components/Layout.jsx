@@ -4,9 +4,11 @@ import { useState } from "react";
 // Components
 import Modal from "./Modal";
 import Authentication from "./Authentication";
+import { useAuth } from "../context/AuthContext";
 
 const Layout = (props) => {
   const { children } = props;
+  const { globalUser, signout } = useAuth();
   const [showModal, setShowModal] = useState(false);
 
   const header = (
@@ -15,14 +17,25 @@ const Layout = (props) => {
         <h1 className="text-gradient">COFFEEFIED</h1>
         <p>For Coffee Enthusiasts</p>
       </div>
-      <button
-        onClick={() => {
-          setShowModal(true);
-        }}
-      >
-        <p>Sign up for free today!</p>
-        <i className="fa-solid fa-mug-hot"></i>
-      </button>
+      {globalUser ? (
+        <button
+          onClick={() => {
+            signout();
+          }}
+        >
+          <p>Logout</p>
+          <i className="fa-solid fa-right-from-bracket"></i>
+        </button>
+      ) : (
+        <button
+          onClick={() => {
+            setShowModal(true);
+          }}
+        >
+          <p>Sign up for free today!</p>
+          <i className="fa-solid fa-mug-hot"></i>
+        </button>
+      )}
     </header>
   );
   const footer = (
@@ -49,7 +62,11 @@ const Layout = (props) => {
             setShowModal(false);
           }}
         >
-          <Authentication />
+          <Authentication
+            handleCloseModal={() => {
+              setShowModal(false);
+            }}
+          />
         </Modal>
       )}
       {header}

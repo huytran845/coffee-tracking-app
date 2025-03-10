@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
-const Authentication = () => {
+const Authentication = (props) => {
+  const { handleCloseModal } = props;
   const [isRegistration, setIsRegistration] = useState(false);
   const [email, setEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
@@ -10,6 +11,7 @@ const Authentication = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
+  const [error, setError] = useState(null);
 
   const { signup, login, signout } = useAuth();
 
@@ -75,6 +77,7 @@ const Authentication = () => {
 
     try {
       setAuthenticating(true);
+      setError(null);
 
       if (isRegistration) {
         // if (
@@ -84,7 +87,7 @@ const Authentication = () => {
         //   !specialChars.some((char) => password.includes(char)) ||
         //   password != confirmPassword
         // ) {
-        // Fails to meet requirements
+        // console.log("Requirements not met!")
         // } else {
         // Registering the user
         await signup(email, password);
@@ -93,8 +96,10 @@ const Authentication = () => {
         // Login the user
         await login(email, password);
       }
+      handleCloseModal();
     } catch (error) {
       console.error(error);
+      setError(error);
     } finally {
       setAuthenticating(false);
     }
@@ -104,6 +109,7 @@ const Authentication = () => {
     <>
       <h2 className="sign-up-text">{isRegistration ? "Sign Up" : "Login"}</h2>
       <p>{isRegistration ? "Create an account!" : "Login to your account!"}</p>
+      {error && <p>❌{error}</p>}
       <input
         value={email}
         onChange={(emailEvent) => {

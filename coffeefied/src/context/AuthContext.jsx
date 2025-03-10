@@ -2,8 +2,8 @@
 import { useState, useEffect, useContext, createContext, useMemo } from "react";
 import {
   login as loginService,
-  signup,
-  resetPassword,
+  signup as signupService,
+  resetPassword as resetPasswordService,
   signout as singoutService,
 } from "../service/AuthService";
 import { onAuthStateChanged } from "firebase/auth";
@@ -18,7 +18,7 @@ function useAuth() {
 
 const AuthProvider = (props) => {
   const { children } = props;
-  const [globalUser, setUser] = useState(null);
+  const [globalUser, setGlobalUser] = useState(null);
   const [globalData, setGlobalData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,7 +27,7 @@ const AuthProvider = (props) => {
     setIsLoading(true);
     try {
       const userCredential = await signupService(email, password);
-      setUser(userCredential.user);
+      setGlobalUser(userCredential.user);
     } catch (error) {
       console.error(error);
     } finally {
@@ -40,7 +40,7 @@ const AuthProvider = (props) => {
     setIsLoading(true);
     try {
       const userCredential = await loginService(email, password);
-      setUser(userCredential.user);
+      setGlobalUser(userCredential.user);
     } catch (error) {
       console.error(error);
     } finally {
@@ -65,7 +65,7 @@ const AuthProvider = (props) => {
     setIsLoading(true);
     try {
       await singoutService();
-      setUser(null);
+      setGlobalUser(null);
       setGlobalData(null);
     } catch (error) {
       console.error(error);
@@ -91,6 +91,7 @@ const AuthProvider = (props) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log("Current User: ", user);
+      setGlobalUser(user);
 
       // If there's no user, then empty user state and return from listener
       if (!user) {
