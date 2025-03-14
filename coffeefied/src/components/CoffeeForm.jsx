@@ -5,9 +5,13 @@ import { useState } from "react";
 // Components
 import Authentication from "./Authentication";
 import Modal from "./Modal";
+import { useAuth } from "../context/AuthContext";
+import { db } from "../../firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 const CoffeeForm = (props) => {
   const { isAuthenticated } = props;
+  const { globalUser, globalData, setGlobalData } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [selectedCoffee, setSelectedCoffee] = useState(null);
   const [showCoffeeTypes, setShowCoffeeTypes] = useState(false);
@@ -15,12 +19,54 @@ const CoffeeForm = (props) => {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
 
-  function handleSubmitForm() {
+  async function handleSubmitForm() {
     if (!isAuthenticated) {
       setShowModal(true);
       return;
     }
-    console.log(selectedCoffee, coffeeCost, hours, minutes);
+
+    // If there is no coffee selected, then prevent the form from being submitted.
+    if (!selectedCoffee) {
+      return;
+    }
+
+    try {
+      // Create new data object to house the new data.
+      const newGlobalData = {
+        ...(globalData || {}),
+      };
+
+      // Convert current time entry into a time stamp to put into our new data object.
+      const curTime = Date.now();
+      const subtractTime = hours * 60 * 60 * 1000 + minutes * 60 * 100;
+      const timeStamp = curTime - subtractTime;
+
+      const newData = { name: selectedCoffee, cost: coffeeCost };
+      newGlobalData[timeStamp] = newData;
+
+      console.log(timeStamp, selectedCoffee, coffeeCost);
+
+      // Update the globalData to match the new object data we've created, due to React's immutability.
+      setGlobalData(newGlobalData);
+
+      // Persist data in the firebase firestore, adding entry by merging the new with current data.
+      const userRef = doc(db, "Users", globalUser.uid);
+      const res = await setDoc(
+        userRef,
+        {
+          [timeStamp]: newData,
+        },
+        { merge: true }
+      );
+
+      // Resets the entire form after successful logging and submission.
+      setSelectedCoffee(null);
+      setHours(0);
+      setMinutes(0);
+      setCoffeeCost(0);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (

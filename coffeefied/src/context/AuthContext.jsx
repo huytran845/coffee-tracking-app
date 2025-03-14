@@ -109,8 +109,8 @@ const AuthProvider = (props) => {
 
         let firebaseData = {};
         if (docSnap.exists()) {
-          console.log("User data found!");
           firebaseData = docSnap.data();
+          console.log("User data found!", firebaseData);
         }
         setGlobalData(firebaseData);
       } catch (error) {
