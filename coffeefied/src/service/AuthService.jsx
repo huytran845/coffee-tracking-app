@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../../firebase";
 
+// Service file that houses all the firebase function calls.
 export async function signup(email, password) {
   return createUserWithEmailAndPassword(auth, email, password);
 }

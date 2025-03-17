@@ -1,3 +1,4 @@
+// Contains the caffeine status levels available for users.
 export const statusLevels = {
   low: {
     color: "#047857",
@@ -22,6 +23,7 @@ export const statusLevels = {
   },
 };
 
+// Example data that was used in development, demonstrates how the coffee data is stored.
 export const coffeeConsumptionHistory = {
   1727579064032: { name: "Americano", cost: 5.52 },
   1727629263026: { name: "Rockstar Energy (16oz)", cost: 6.78 },
@@ -68,6 +70,7 @@ export const coffeeConsumptionHistory = {
   1727635847332: { name: "Black Coffee (8oz)", cost: 6.11 },
 };
 
+// Stores all the options that the user has to select upon choosing other, allowing additional options to be added here if needed.
 export const coffeeOptions = [
   { coffeeName: "Espresso", caffeine: 63 },
   { coffeeName: "Double Espresso", caffeine: 126 },
@@ -107,22 +110,25 @@ export const coffeeOptions = [
   { coffeeName: "Zipfizz (1 tube)", caffeine: 100 },
 ];
 
+// Variable to define how long coffee lasts in the body.
 const halfLifeHours = 5;
 
+// Calculates the current caffeine level of user based on the current time.
 export function calculateCurrentCaffeineLevel(historyData) {
   const currentTime = Date.now();
-  const halfLife = halfLifeHours * 60 * 60 * 1000; // 5 hours in milliseconds
-  const maxAge = 48 * 60 * 60 * 1000; // 48 hours in milliseconds
+  const halfLife = halfLifeHours * 60 * 60 * 1000; // 5 hours in milliseconds.
+  const maxAge = 48 * 60 * 60 * 1000; // 48 hours in milliseconds.
 
   let totalCaffeine = 0;
 
+  // For each entry in the data calculated the caffeine amount.
   for (const [timestamp, entry] of Object.entries(historyData)) {
     const timeElapsed = currentTime - parseInt(timestamp);
 
-    // Ignore entries older than 48 hours
+    // Ignore entries older than 48 hours.
     if (timeElapsed <= maxAge) {
       const caffeineInitial = getCaffeineAmount(entry.name);
-      // Calculate the remaining caffeine using the half-life formula
+      // Calculate the remaining caffeine using the half-life formula.
       const remainingCaffeine =
         caffeineInitial * Math.pow(0.5, timeElapsed / halfLife);
       totalCaffeine += remainingCaffeine;
@@ -132,16 +138,17 @@ export function calculateCurrentCaffeineLevel(historyData) {
   return totalCaffeine.toFixed(2);
 }
 
-// Helper function to get caffeine amount based on the coffee name
+// Helper function to get caffeine amount based on the coffee name.
 export function getCaffeineAmount(coffeeName) {
   const coffee = coffeeOptions.find((c) => c.coffeeName === coffeeName);
   return coffee ? coffee.caffeine : 0;
 }
 
+// Based on the provided data get the top 3 coffees based on their frequencies.
 export function getTopThreeCoffees(historyData) {
   const coffeeCount = {};
 
-  // Count occurrences of each coffee type
+  // Count occurrences of each coffee type.
   for (const entry of Object.values(historyData)) {
     const coffeeName = entry.name;
     if (coffeeCount[coffeeName]) {
@@ -151,16 +158,16 @@ export function getTopThreeCoffees(historyData) {
     }
   }
 
-  // Convert coffeeCount object to an array of [coffeeName, count] and sort by count
+  // Convert coffeeCount object to an array of [coffeeName, count] and sort by count.
   const sortedCoffees = Object.entries(coffeeCount).sort((a, b) => b[1] - a[1]);
 
-  // Calculate total coffees consumed
+  // Calculate total coffees consumed by accumulating the count value of the array.
   const totalCoffees = Object.values(coffeeCount).reduce(
     (sum, count) => sum + count,
     0
   );
 
-  // Get the top 3 most popular coffees
+  // Get the top 3 most popular coffees since the array is in descending order.
   const topThree = sortedCoffees.slice(0, 3).map(([coffeeName, count]) => {
     const percentage = ((count / totalCoffees) * 100).toFixed(2);
     return {
@@ -173,11 +180,12 @@ export function getTopThreeCoffees(historyData) {
   return topThree;
 }
 
+// Calculates time since last coffee consumption.
 export function timeSinceConsumption(utcMilliseconds) {
   const now = Date.now();
   const diffInMilliseconds = now - utcMilliseconds;
 
-  // Convert to seconds, minutes, hours, days, and months
+  // Convert to seconds, minutes, hours, days, and months.
   const seconds = Math.floor(diffInMilliseconds / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
@@ -201,7 +209,7 @@ export function timeSinceConsumption(utcMilliseconds) {
   return result.trim(); // Remove any trailing space
 }
 
-// This function was added during recording
+// This function calculates all the values needed for the stats section of the application.
 export function calculateCoffeeStats(coffeeConsumptionHistory) {
   const dailyStats = {};
   let totalCoffees = 0;
@@ -210,11 +218,11 @@ export function calculateCoffeeStats(coffeeConsumptionHistory) {
   let totalDaysWithCoffee = 0;
 
   for (const [timestamp, coffee] of Object.entries(coffeeConsumptionHistory)) {
-    const date = new Date(parseInt(timestamp)).toISOString().split("T")[0]; // Extract date in YYYY-MM-DD format
+    const date = new Date(parseInt(timestamp)).toISOString().split("T")[0]; // Convert time stamp to int and then UTC time before spliting the string to preserve only the date.
     const caffeine = getCaffeineAmount(coffee.name);
     const cost = parseFloat(coffee.cost);
 
-    // Initialize or update the daily stats
+    // Initialize or update the daily stats.
     if (!dailyStats[date]) {
       dailyStats[date] = { caffeine: 0, cost: 0, count: 0 };
     }
@@ -223,7 +231,7 @@ export function calculateCoffeeStats(coffeeConsumptionHistory) {
     dailyStats[date].cost += cost;
     dailyStats[date].count += 1;
 
-    // Update totals
+    // Update totals.
     totalCoffees += 1;
     totalCost += cost;
   }
@@ -232,11 +240,11 @@ export function calculateCoffeeStats(coffeeConsumptionHistory) {
   for (const [date, stats] of Object.entries(dailyStats)) {
     if (stats.caffeine > 0) {
       totalCaffeine += stats.caffeine;
-      totalDaysWithCoffee += 1; // Count days when caffeine was consumed
+      totalDaysWithCoffee += 1; // Count days when caffeine was consumed.
     }
   }
 
-  // Calculate average daily caffeine and average daily cost
+  // Calculate average daily caffeine and average daily cost.
   const averageDailyCaffeine =
     totalDaysWithCoffee > 0
       ? (totalCaffeine / totalDaysWithCoffee).toFixed(2)

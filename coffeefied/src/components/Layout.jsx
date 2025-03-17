@@ -6,6 +6,7 @@ import Modal from "./Modal";
 import Authentication from "./Authentication";
 import { useAuth } from "../context/AuthContext";
 
+// The layout component defines the header and the footer section of the application.
 const Layout = (props) => {
   const { children } = props;
   const { globalUser, signout } = useAuth();
@@ -54,6 +55,7 @@ const Layout = (props) => {
     </footer>
   );
 
+  // If the Modal is needed, it will be displayed above all the other components, but otherwise just wraps the footer and header around the children components.
   return (
     <>
       {showModal && (

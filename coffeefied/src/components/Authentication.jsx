@@ -2,6 +2,9 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
+// Authentication takes in the handleCloseModal prop to close the modal upon proper form completion.
+// It houses inputs from the users required for registration such as password and email.
+// There are authenticating, error, and registration states to dynamically change the form for the user.
 const Authentication = (props) => {
   const { handleCloseModal } = props;
   const [isRegistration, setIsRegistration] = useState(false);
@@ -49,11 +52,12 @@ const Authentication = (props) => {
     "/",
   ];
 
+  // Function to check if the provided word has a number.
   function hasNumber(checkWord) {
-    return /\d/.test(checkWord); //Checks through word for number and checks for metacharacter d = digit
+    return /\d/.test(checkWord); //Checks through word for metacharacter d = digit
   }
 
-  // Function to check if there is an uppercase and lowercase value in the password
+  // Function to check if there is an uppercase and lowercase value in the password.
   function hasProperCases(checkWord) {
     if (checkWord === checkWord.toLowerCase()) {
       return false;
@@ -64,6 +68,7 @@ const Authentication = (props) => {
     }
   }
 
+  // Function that checks if a given word contains a special character with an array of special characters.
   function hasSpecialChar(checkWord) {
     if (specialChars.some((char) => checkWord.includes(char))) {
       return true;
@@ -72,6 +77,7 @@ const Authentication = (props) => {
     }
   }
 
+  // checkForm validates the form for each case to ensure that the user properly creates a password associated with their email.
   function checkForm() {
     if (!email.includes("@")) {
       setError("Invalid Email!");
@@ -97,6 +103,7 @@ const Authentication = (props) => {
     }
   }
 
+  // Main function that returns the HTML for the user to submit their credentials.
   async function handleAuthentication() {
     if (
       !email ||

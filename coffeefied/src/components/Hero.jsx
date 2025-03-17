@@ -1,3 +1,4 @@
+// The hero section of the page just displays basic information for the user to get a grasp of the app.
 const Hero = () => {
   return (
     <>

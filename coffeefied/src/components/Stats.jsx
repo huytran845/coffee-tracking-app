@@ -7,6 +7,7 @@ import {
   statusLevels,
 } from "../utilities";
 
+// Function to define the stat card to display provided data based on passed in properties.
 function StatCard(props) {
   const { isLarge, title, children } = props;
   return (
@@ -17,6 +18,7 @@ function StatCard(props) {
   );
 }
 
+// Utilzing the global user data once authenticated, it will display predefined parameters that are calculated based on this data.
 const Stats = () => {
   const { globalData } = useAuth();
   const stats = calculateCoffeeStats(globalData);

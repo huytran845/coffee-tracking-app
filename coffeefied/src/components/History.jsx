@@ -6,9 +6,11 @@ import {
   timeSinceConsumption,
 } from "../utilities";
 
+// The history section shows the user's coffee consumption history based on previous entries.
 const History = () => {
   const { globalData } = useAuth();
 
+  // Takes the data and sorts it by descending order with (a, b) => b-a, using a-b returns the ascending order.
   return (
     <>
       <div className="section-header">

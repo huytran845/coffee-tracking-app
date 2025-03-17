@@ -6,6 +6,7 @@ import History from "./components/History";
 import Stats from "./components/Stats";
 import { useAuth } from "./context/AuthContext";
 
+// The main application with a restricted section that only displays if the user is authenticated.
 function App() {
   const { globalUser, globalData, isLoading } = useAuth();
   const isAuthenticated = globalUser;

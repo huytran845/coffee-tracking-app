@@ -1,6 +1,7 @@
 // Node Modules
 import ReactDom from "react-dom";
 
+// Using the reactDom.createPortal to render components outside the main parent components, while retaining its React components.
 const Modal = (props) => {
   const { children, handleCloseModal } = props;
 

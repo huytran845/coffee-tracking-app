@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
 
+// The primary component of the application where users can submit their coffee information to determine their caffeine level.
 const CoffeeForm = (props) => {
   const { isAuthenticated } = props;
   const { globalUser, globalData, setGlobalData } = useAuth();
@@ -20,6 +21,7 @@ const CoffeeForm = (props) => {
   const [minutes, setMinutes] = useState(0);
 
   async function handleSubmitForm() {
+    // If the user isn't logged in, the button just shows the login/signup form.
     if (!isAuthenticated) {
       setShowModal(true);
       return;
@@ -43,8 +45,6 @@ const CoffeeForm = (props) => {
 
       const newData = { name: selectedCoffee, cost: coffeeCost };
       newGlobalData[timeStamp] = newData;
-
-      //console.log(timeStamp, selectedCoffee, coffeeCost);
 
       // Update the globalData to match the new object data we've created, due to React's immutability.
       setGlobalData(newGlobalData);

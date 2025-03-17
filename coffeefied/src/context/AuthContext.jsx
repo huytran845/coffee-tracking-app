@@ -10,19 +10,22 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../../firebase";
 import { doc, getDoc } from "firebase/firestore";
 
+// The createContext creates a Context object that allows us to pass data without manually passing it as a property.
 const AuthContext = createContext();
 
+// Node module to call in order to reference the data in the authentication.
 function useAuth() {
   return useContext(AuthContext);
 }
 
+// AuthProvider is the component that houses the global variables for all the other components, such as a user and their data.
 const AuthProvider = (props) => {
   const { children } = props;
   const [globalUser, setGlobalUser] = useState(null);
   const [globalData, setGlobalData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Signup
+  // Signup function that calls the service and throws an error if it the process fails, otherwise it signs in the new user.
   async function signup(email, password) {
     setIsLoading(true);
     try {
@@ -36,7 +39,7 @@ const AuthProvider = (props) => {
     }
   }
 
-  // Login
+  // Login function that calls the service and throws an error if it the process fails, sets user as global user if success.
   async function login(email, password) {
     setIsLoading(true);
     try {
@@ -50,7 +53,7 @@ const AuthProvider = (props) => {
     }
   }
 
-  // Reset Password
+  // Reset Password function that calls the service and throws an error if it the process fails.
   async function resetPassword(email) {
     setIsLoading(true);
     try {
@@ -62,7 +65,7 @@ const AuthProvider = (props) => {
     }
   }
 
-  // Signout
+  // Signout function that calls the service and throws an error if it the process fails, otherwise it clears out the current user and their data.
   async function signout() {
     setIsLoading(true);
     try {
@@ -76,6 +79,7 @@ const AuthProvider = (props) => {
     }
   }
 
+  // The varibles that are getting cached with memoization from React, until any of the variables change.
   const value = useMemo(
     () => ({
       globalUser,
@@ -90,6 +94,8 @@ const AuthProvider = (props) => {
     [globalUser, globalData, isLoading]
   );
 
+  // useEffect runs once with the empty array when the component renders.
+  // Wraps around the App to handle the api calls to firebase once the user is logged on.
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log("Current User: ", user);
