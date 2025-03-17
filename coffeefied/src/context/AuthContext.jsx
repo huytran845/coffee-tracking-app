@@ -30,6 +30,7 @@ const AuthProvider = (props) => {
       setGlobalUser(userCredential.user);
     } catch (error) {
       console.error(error);
+      throw new Error("An account with this email already exists!");
     } finally {
       setIsLoading(false);
     }
@@ -43,6 +44,7 @@ const AuthProvider = (props) => {
       setGlobalUser(userCredential.user);
     } catch (error) {
       console.error(error);
+      throw new Error("Incorrect Login Credentials!");
     } finally {
       setIsLoading(false);
     }

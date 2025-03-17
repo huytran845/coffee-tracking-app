@@ -12,8 +12,7 @@ const Authentication = (props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
   const [error, setError] = useState(null);
-
-  const { signup, login, signout } = useAuth();
+  const { signup, login } = useAuth();
 
   const specialChars = [
     "~",
@@ -65,6 +64,39 @@ const Authentication = (props) => {
     }
   }
 
+  function hasSpecialChar(checkWord) {
+    if (specialChars.some((char) => checkWord.includes(char))) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function checkForm() {
+    if (!email.includes("@")) {
+      setError("Invalid Email!");
+      return false;
+    } else if (email != confirmEmail) {
+      setError("Emails Don't Match!");
+      return false;
+    } else if (!hasProperCases(password)) {
+      setError("Missing Uppercase/Lowercase!");
+      return false;
+    } else if (!hasNumber(password)) {
+      setError("Missing Number!");
+      return false;
+    } else if (!specialChars.some((char) => password.includes(char))) {
+      setError("Missing Special Character!");
+      return false;
+    } else if (password != confirmPassword) {
+      setError("Passwords Don't Match!");
+      return false;
+    } else {
+      setError(null);
+      return true;
+    }
+  }
+
   async function handleAuthentication() {
     if (
       !email ||
@@ -77,29 +109,22 @@ const Authentication = (props) => {
 
     try {
       setAuthenticating(true);
-      setError(null);
 
       if (isRegistration) {
-        // if (
-        //   email != confirmEmail ||
-        //   !hasProperCases(password) ||
-        //   !hasNumber(password) ||
-        //   !specialChars.some((char) => password.includes(char)) ||
-        //   password != confirmPassword
-        // ) {
-        // console.log("Requirements not met!")
-        // } else {
-        // Registering the user
-        await signup(email, password);
-        // }
+        // Checks forms for errors, if there is none, sign up user.
+        if (checkForm() == true) {
+          // Registering the user
+          await signup(email, password);
+        } else {
+          return;
+        }
       } else {
         // Login the user
         await login(email, password);
       }
       handleCloseModal();
     } catch (error) {
-      console.error(error);
-      setError(error);
+      setError(error.message);
     } finally {
       setAuthenticating(false);
     }
@@ -109,7 +134,17 @@ const Authentication = (props) => {
     <>
       <h2 className="sign-up-text">{isRegistration ? "Sign Up" : "Login"}</h2>
       <p>{isRegistration ? "Create an account!" : "Login to your account!"}</p>
-      {error && <p>❌{error}</p>}
+      {error && <p>❌ {error}</p>}
+      {isRegistration && (
+        <p>
+          Password Requirements: <br />
+          {hasProperCases(password) && "✅ "}1 Uppercase/Lowercase <br />{" "}
+          {hasNumber(password) && "✅ "}1 Number
+          <br /> {hasSpecialChar(password) && "✅ "} Special Character
+          (!,?,etc.) <br /> {password.length > 8 && "✅ "} Greater Than 8
+          Characters
+        </p>
+      )}
       <input
         value={email}
         onChange={(emailEvent) => {

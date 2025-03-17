@@ -44,7 +44,7 @@ const CoffeeForm = (props) => {
       const newData = { name: selectedCoffee, cost: coffeeCost };
       newGlobalData[timeStamp] = newData;
 
-      console.log(timeStamp, selectedCoffee, coffeeCost);
+      //console.log(timeStamp, selectedCoffee, coffeeCost);
 
       // Update the globalData to match the new object data we've created, due to React's immutability.
       setGlobalData(newGlobalData);
